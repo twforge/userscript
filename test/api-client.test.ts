@@ -14,7 +14,6 @@ function stubFetch(status: number, body: unknown) {
   return { fetchFn, calls };
 }
 
-/** A client against a stub API, with no API key unless one is given. */
 function client(fetchFn: typeof fetch, getApiKey: () => string | null = () => null) {
   return createApiClient('https://api.test', getApiKey, fetchFn);
 }

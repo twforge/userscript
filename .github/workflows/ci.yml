@@ -1,8 +1,5 @@
 name: CI
 
-# Lint, format check, typecheck, tests and build on every PR and on main. Read-only: no job here can write to the
-# repository, and the checkout leaves no credentials behind for the installed dependencies to find.
-
 on:
   push:
     branches:
