@@ -1,6 +1,4 @@
 {
-  // The tests and the build script run in Node, so they get Node types (the browser code in src/ does not, see
-  // ../tsconfig.json).
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "types": ["node"]

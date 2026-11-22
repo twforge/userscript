@@ -1,14 +1,8 @@
-// Client for the TW Forge Developer API, typed with the published contract (@twforge/developer-api).
-// The contract package only provides types, which are erased at build time: no third-party code ends up in the
-// bundle (game script rules). `npm run typecheck` fails if the script uses a path, parameter, body or field the
-// contract doesn't have.
-
 import type { components, paths } from '@twforge/developer-api';
 
 /** The API path version this script speaks. Must match the major version of @twforge/developer-api. */
 export const API_VERSION = 1;
 
-/** Where TW Forge runs, unless the loader config (`TWForgeConfig.baseUrl`) points elsewhere. */
 export const DEFAULT_BASE_URL = 'https://twforge.net';
 
 /** The TW Forge base URL without trailing slash: `DEFAULT_BASE_URL` if `baseUrl` is empty or missing. */
@@ -16,14 +10,13 @@ export function twforgeBaseUrl(baseUrl: string | undefined): string {
   return (baseUrl || DEFAULT_BASE_URL).replace(/\/+$/, '');
 }
 
-/** The API base URL under a TW Forge base URL. The version lives here, not in the loader config. */
+/** The API base URL under a TW Forge base URL. */
 export function apiBaseUrl(baseUrl: string | undefined): string {
   return `${twforgeBaseUrl(baseUrl)}/api/v${API_VERSION}`;
 }
 
 type Method = 'get' | 'post' | 'put' | 'delete';
 
-/** The paths that have an operation for the method. */
 type PathsWith<M extends Method> = { [P in keyof paths]: paths[P][M] extends undefined ? never : P }[keyof paths];
 
 type Operation<P extends keyof paths, M extends Method> = NonNullable<paths[P][M]>;

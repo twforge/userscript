@@ -1,7 +1,5 @@
 {
-  // Type-checking only. esbuild bundles src/ (scripts/build.ts); Node runs the build script and the tests' .ts files directly.
-  // This config covers the browser code in src/, without Node types: Node APIs there fail the typecheck.
-  // test/tsconfig.json adds them for the tests.
+  // Browser code only, without Node types: Node APIs in src/ fail the typecheck.
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",

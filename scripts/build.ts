@@ -22,13 +22,12 @@ import pkg from '../package.json' with { type: 'json' };
 // way the script does at runtime.
 import { twforgeBaseUrl } from '../src/api/client.ts';
 
-// Paths are resolved from the repository root, so the build works from any working directory.
 const root = fileURLToPath(new URL('..', import.meta.url));
 const srcDir = `${root}src/`;
 const distDir = `${root}dist`;
 
 const dev = process.argv.includes('--dev');
-const base = twforgeBaseUrl(process.env.TWFORGE_BASE); // empty or unset: the default
+const base = twforgeBaseUrl(process.env.TWFORGE_BASE);
 const devHost = '127.0.0.1';
 const devPort = 8799;
 const devMainScriptUrl = process.env.TWFORGE_MAIN_URL || `http://${devHost}:${devPort}/twforge.js`;
@@ -96,10 +95,6 @@ if (dev) {
   console.log('[twforge] built dist/twforge.js and dist/twforge.user.js');
 }
 
-/**
- * The userscript players install: header, config, and where the main script is loaded. Only the dev loader actually
- * loads it (from the dev server); the released one has a comment there instead.
- */
 async function writeLoader() {
   const loadMainScript = dev
     ? `win.$.ajax({
@@ -126,7 +121,6 @@ ${loadMainScript}
   await writeFile(`${distDir}/twforge.user.js`, script);
 }
 
-/** The ==UserScript== block, from the "userscript" field of package.json. */
 function userscriptHeader() {
   const { match, ...meta } = pkg.userscript;
   const entries: [string, string][] = [

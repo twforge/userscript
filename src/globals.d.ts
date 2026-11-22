@@ -1,6 +1,4 @@
-// Ambient types for globals the script reads. Type declarations only: nothing here ends up in the bundle.
-
-/** Replaced at build time with the package version (see scripts/build.ts). */
+/** Replaced at build time with the package version. */
 declare const __TWFORGE_VERSION__: string;
 
 interface Window {

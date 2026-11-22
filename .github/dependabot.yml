@@ -12,6 +12,10 @@ updates:
       default-days: 7
     commit-message:
       prefix: build
+    ignore:
+      # typescript-eslint doesn't support TypeScript 7 yet (peer range <6.1.0). Drop once it does.
+      - dependency-name: typescript
+        versions: ['>=7']
     groups:
       # Contract updates get their own PR: a new minor may bring fields worth using.
       api-contract:

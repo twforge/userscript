@@ -1,6 +1,3 @@
-// Guards that the client and the installed contract package agree on the API version and the default API base URL.
-// Shape mismatches are caught by `npm run typecheck`; this covers what types can't.
-
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import spec from '@twforge/developer-api/openapi.json' with { type: 'json' };

@@ -1,5 +1,3 @@
-// Entry point of the bundle.
-
 import { createApiClient } from './api/client.ts';
 
 function main(): void {
