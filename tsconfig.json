@@ -1,0 +1,23 @@
+{
+  // Type-checking only. esbuild bundles src/ (scripts/build.ts); Node runs the build script and the tests' .ts files directly.
+  // This config covers the browser code in src/, without Node types: Node APIs there fail the typecheck.
+  // test/tsconfig.json adds them for the tests.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": []
+  },
+  "include": ["src"]
+}

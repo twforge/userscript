@@ -1,0 +1,54 @@
+{
+  "name": "@twforge/userscript",
+  "version": "0.0.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "description": "TW Forge userscript: brings TW Forge data into Tribal Wars, using the TW Forge Developer API.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twforge/userscript.git"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "npm",
+      "version": ">=11.17.0",
+      "onFail": "error"
+    }
+  },
+  "userscript": {
+    "name": "TW Forge",
+    "namespace": "https://twforge.net",
+    "author": "TW Forge",
+    "description": "TW Forge in Tribal Wars",
+    "match": [
+      "https://*.die-staemme.de/game.php*"
+    ],
+    "grant": "none",
+    "run-at": "document-idle"
+  },
+  "scripts": {
+    "build": "node scripts/build.ts",
+    "dev": "node scripts/build.ts --dev",
+    "typecheck": "tsc -p . && tsc -p test",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --test \"test/**/*.test.ts\"",
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm test"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.0",
+    "@twforge/developer-api": "^1.1.0",
+    "@types/node": "^24.0.0",
+    "esbuild": "^0.28.0",
+    "eslint": "^10.0.0",
+    "globals": "^17.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.72.2"
+  }
+}

@@ -1,0 +1,114 @@
+name: Release
+
+# Releases the userscript with release-please; see README.md ("Releasing"). This workflow builds the released files
+# (main script and loader) from the release tag and attaches them to the GitHub release; the build job runs the checks
+# once more right before, as a gate on exactly what gets released. Submitting them to the game stays a manual step.
+#
+# release-please uses a GitHub App token, so CI runs on its release PRs (pushes made with GITHUB_TOKEN trigger no
+# workflows). The `build` job installs dependencies and builds from the release tag with read-only permissions; only
+# the `attach` job, which installs nothing and runs no repository code, may change the release.
+
+on:
+  push:
+    branches:
+      - main
+
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release-created: ${{ steps.release.outputs.release_created }}
+      tag: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@f418cff399f7aef4c2f0ad47e25ca7a6abbdd6fc # v3.4.0
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+          permission-issues: write # release-please labels its PRs
+
+      - name: Run release-please
+        id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  build:
+    needs: release-please
+    if: needs.release-please.outputs.release-created == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.release-please.outputs.tag }}
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '26'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check
+        run: npm run check
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload build
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: userscript
+          path: dist/*.js
+          if-no-files-found: error
+          retention-days: 7
+
+  attach:
+    needs: [release-please, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # attach files to the GitHub release
+    steps:
+      - name: Download build
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: userscript
+          path: userscript
+
+      # --clobber makes the step repeatable, so "Re-run failed jobs" just works.
+      - name: Attach files to the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.release-please.outputs.tag }}
+        run: gh release upload "$TAG" userscript/*.js --clobber
+
+      - name: Summary
+        env:
+          TAG: ${{ needs.release-please.outputs.tag }}
+        run: |
+          {
+            echo "### Userscript $TAG is built"
+            echo
+            echo "Attached to the GitHub release $TAG: $(cd userscript && ls *.js | tr '\n' ' ')"
+            echo
+            echo "Submit them to the game together with the release notes from \`CHANGELOG.md\` (see README.md,"
+            echo "\"Releasing\")."
+          } >> "$GITHUB_STEP_SUMMARY"

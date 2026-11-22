@@ -1,0 +1,37 @@
+# npm updates respect the same 7-day cooldown as .npmrc; GitHub Actions are SHA-pinned and kept up to date here
+# (including their "# vX.Y.Z" comments).
+# Commit prefixes are conventional-commit types that don't trigger a release (see release-please-config.json):
+# dependencies are build tooling and types only, none of them ends up in the bundle.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: build
+    groups:
+      # Contract updates get their own PR: a new minor may bring fields worth using.
+      api-contract:
+        patterns:
+          - '@twforge/developer-api'
+      tooling:
+        patterns:
+          - '*'
+        exclude-patterns:
+          - '@twforge/developer-api'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
+    # One PR for all actions: upload-/download-artifact only work in matching versions, and they only run in
+    # release.yml, which PR checks don't cover.
+    groups:
+      github-actions:
+        patterns:
+          - '*'
